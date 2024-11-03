@@ -2,13 +2,14 @@
 /*!************************!*\
   !*** ./src/js/main.js ***!
   \************************/
-window.addEventListener("DOMContentLoaded", () => {
-  //tabs
-  const tabs = document.querySelectorAll(".tabheader__item"),
-    tabsСontent = document.querySelectorAll(".tabcontent"),
+window.addEventListener("DOMContentLoaded", function () {
+  // Tabs
+
+  let tabs = document.querySelectorAll(".tabheader__item"),
+    tabsContent = document.querySelectorAll(".tabcontent"),
     tabsParent = document.querySelector(".tabheader__items");
   function hideTabContent() {
-    tabsСontent.forEach(item => {
+    tabsContent.forEach(item => {
       item.classList.add("hide");
       item.classList.remove("show", "fade");
     });
@@ -17,13 +18,13 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
   function showTabContent(i = 0) {
-    tabsСontent[i].classList.add("show", "fade");
-    tabsСontent[i].classList.remove("hide");
+    tabsContent[i].classList.add("show", "fade");
+    tabsContent[i].classList.remove("hide");
     tabs[i].classList.add("tabheader__item_active");
   }
   hideTabContent();
   showTabContent();
-  tabsParent.addEventListener("click", event => {
+  tabsParent.addEventListener("click", function (event) {
     const target = event.target;
     if (target && target.classList.contains("tabheader__item")) {
       tabs.forEach((item, i) => {
@@ -35,14 +36,15 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  //Timer
-  const deadline = "2027-04-30";
+  // Timer
+
+  const deadline = "2022-06-11";
   function getTimeRemaining(endtime) {
     const t = Date.parse(endtime) - Date.parse(new Date()),
       days = Math.floor(t / (1000 * 60 * 60 * 24)),
-      hours = Math.floor(t / (1000 * 60 * 60) % 24),
-      minutes = Math.floor(t / (1000 * 60) % 60),
-      seconds = Math.floor(t / 1000 % 60);
+      seconds = Math.floor(t / 1000 % 60),
+      minutes = Math.floor(t / 1000 / 60 % 60),
+      hours = Math.floor(t / (1000 * 60 * 60) % 24);
     return {
       total: t,
       days: days,
@@ -53,7 +55,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
   function getZero(num) {
     if (num >= 0 && num < 10) {
-      return `0${num}`;
+      return "0" + num;
     } else {
       return num;
     }
@@ -78,6 +80,35 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
   setClock(".timer", deadline);
+
+  // Modal
+
+  const modalTrigger = document.querySelectorAll("[data-modal]"),
+    modal = document.querySelector(".modal"),
+    modalCloseBtn = document.querySelector("[data-close]");
+  modalTrigger.forEach(btn => {
+    btn.addEventListener("click", function () {
+      modal.classList.add("show");
+      modal.classList.remove("hide");
+      document.body.style.overflow = "hidden";
+    });
+  });
+  function closeModal() {
+    modal.classList.add("hide");
+    modal.classList.remove("show");
+    document.body.style.overflow = "";
+  }
+  modalCloseBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", e => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+  document.addEventListener("keydown", e => {
+    if (e.code === "Escape" && modal.classList.contains("show")) {
+      closeModal();
+    }
+  });
 });
 /******/ })()
 ;
