@@ -229,38 +229,36 @@ window.addEventListener("DOMContentLoaded", function () {
       let statusMessage = document.createElement("img");
       statusMessage.src = message.loading;
       statusMessage.style.cssText = `
-        display: block;
-        margin: 0 auto;
-      `;
-
+              display: block;
+              margin: 0 auto;
+          `;
       form.insertAdjacentElement("afterend", statusMessage);
 
-      const request = new XMLHttpRequest();
-      request.open("POST", "server.php");
-      request.setRequestHeader(
-        "Content-type",
-        "application/json; charset=utf-8"
-      );
       const formData = new FormData(form);
 
       const object = {};
       formData.forEach(function (value, key) {
         object[key] = value;
       });
-      const json = JSON.stringify(object);
 
-      request.send(json);
-
-      request.addEventListener("load", () => {
-        if (request.status === 200) {
-          console.log(request.response);
+      fetch("server.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(object),
+      })
+        .then((data) => {
+          console.log(data);
           showThanksModal(message.success);
-          form.reset();
           statusMessage.remove();
-        } else {
+        })
+        .catch(() => {
           showThanksModal(message.failure);
-        }
-      });
+        })
+        .finally(() => {
+          form.reset();
+        });
     });
   }
 
@@ -273,13 +271,11 @@ window.addEventListener("DOMContentLoaded", function () {
     const thanksModal = document.createElement("div");
     thanksModal.classList.add("modal__dialog");
     thanksModal.innerHTML = `
-        <div class="modal__content">
-          <div class="modal__close" data-close>×</div>
-          <div class="modal__title">${message}
+          <div class="modal__content">
+              <div class="modal__close" data-close>×</div>
+              <div class="modal__title">${message}</div>
           </div>
-        </div>
-    `;
-
+      `;
     document.querySelector(".modal").append(thanksModal);
     setTimeout(() => {
       thanksModal.remove();
