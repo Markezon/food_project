@@ -169,15 +169,15 @@ window.addEventListener("DOMContentLoaded", function () {
       }
 
       element.innerHTML = `
-                <img src=${this.src} alt=${this.alt}>
-                <h3 class="menu__item-subtitle">${this.title}</h3>
-                <div class="menu__item-descr">${this.descr}</div>
-                <div class="menu__item-divider"></div>
-                <div class="menu__item-price">
-                    <div class="menu__item-cost">Цена:</div>
-                    <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
-                </div>
-            `;
+              <img src=${this.src} alt=${this.alt}>
+              <h3 class="menu__item-subtitle">${this.title}</h3>
+              <div class="menu__item-descr">${this.descr}</div>
+              <div class="menu__item-divider"></div>
+              <div class="menu__item-price">
+                  <div class="menu__item-cost">Цена:</div>
+                  <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+              </div>
+          `;
       this.parent.append(element);
     }
   }
@@ -237,9 +237,9 @@ window.addEventListener("DOMContentLoaded", function () {
       let statusMessage = document.createElement("img");
       statusMessage.src = message.loading;
       statusMessage.style.cssText = `
-                display: block;
-                margin: 0 auto;
-            `;
+              display: block;
+              margin: 0 auto;
+          `;
       form.insertAdjacentElement("afterend", statusMessage);
 
       const formData = new FormData(form);
@@ -270,11 +270,11 @@ window.addEventListener("DOMContentLoaded", function () {
     const thanksModal = document.createElement("div");
     thanksModal.classList.add("modal__dialog");
     thanksModal.innerHTML = `
-            <div class="modal__content">
-                <div class="modal__close" data-close>×</div>
-                <div class="modal__title">${message}</div>
-            </div>
-        `;
+          <div class="modal__content">
+              <div class="modal__close" data-close>×</div>
+              <div class="modal__title">${message}</div>
+          </div>
+      `;
     document.querySelector(".modal").append(thanksModal);
     setTimeout(() => {
       thanksModal.remove();
@@ -290,6 +290,7 @@ window.addEventListener("DOMContentLoaded", function () {
   let slideIndex = 1;
 
   const slides = document.querySelectorAll(".offer__slide"),
+    slider = document.querySelector(".offer__slider"),
     prev = document.querySelector(".offer__slider-prev"),
     next = document.querySelector(".offer__slider-next"),
     total = document.querySelector("#total"),
@@ -316,6 +317,50 @@ window.addEventListener("DOMContentLoaded", function () {
     slide.style.width = width;
   });
 
+  slider.style.position = "relative";
+
+  const indicators = document.createElement("ol"),
+    dots = [];
+  indicators.classList.add("carousel-indicators");
+  indicators.style.cssText = `
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 15;
+      display: flex;
+      justify-content: center;
+      margin-right: 15%;
+      margin-left: 15%;
+      list-style: none;
+  `;
+  slider.append(indicators);
+
+  for (let i = 0; i < slides.length; i++) {
+    const dot = document.createElement("li");
+    dot.setAttribute("data-slide-to", i + 1);
+    dot.style.cssText = `
+          box-sizing: content-box;
+          flex: 0 1 auto;
+          width: 30px;
+          height: 6px;
+          margin-right: 3px;
+          margin-left: 3px;
+          cursor: pointer;
+          background-color: #fff;
+          background-clip: padding-box;
+          border-top: 10px solid transparent;
+          border-bottom: 10px solid transparent;
+          opacity: .5;
+          transition: opacity .6s ease;
+      `;
+    if (i == 0) {
+      dot.style.opacity = 1;
+    }
+    indicators.append(dot);
+    dots.push(dot);
+  }
+
   next.addEventListener("click", () => {
     if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
       offset = 0;
@@ -336,6 +381,9 @@ window.addEventListener("DOMContentLoaded", function () {
     } else {
       current.textContent = slideIndex;
     }
+
+    dots.forEach((dot) => (dot.style.opacity = ".5"));
+    dots[slideIndex - 1].style.opacity = 1;
   });
 
   prev.addEventListener("click", () => {
@@ -358,5 +406,28 @@ window.addEventListener("DOMContentLoaded", function () {
     } else {
       current.textContent = slideIndex;
     }
+
+    dots.forEach((dot) => (dot.style.opacity = ".5"));
+    dots[slideIndex - 1].style.opacity = 1;
+  });
+
+  dots.forEach((dot) => {
+    dot.addEventListener("click", (e) => {
+      const slideTo = e.target.getAttribute("data-slide-to");
+
+      slideIndex = slideTo;
+      offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+
+      slidesField.style.transform = `translateX(-${offset}px)`;
+
+      if (slides.length < 10) {
+        current.textContent = `0${slideIndex}`;
+      } else {
+        current.textContent = slideIndex;
+      }
+
+      dots.forEach((dot) => (dot.style.opacity = ".5"));
+      dots[slideIndex - 1].style.opacity = 1;
+    });
   });
 });
